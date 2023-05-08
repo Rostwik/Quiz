@@ -14,20 +14,21 @@ def add_quiz_questions():
     with open(path, "r", encoding="KOI8-R") as file:
         file_contents = file.read()
 
-    sep_box = file_contents.split('\n\n\n')
+    separated_content = file_contents.split('\n\n\n')
 
-    new_q, new_a = '', ''
-    for box in sep_box:
-        boxter = box.split('\n\n')
-        for item in boxter:
+    question, answer = '', ''
+
+    for question in separated_content:
+        question_components = question.split('\n\n')
+        for item in question_components:
             if 'Вопрос' in item:
-                q = item.find(':') + 1
-                new_q = item[q:]
+                symbol_position = item.find(':') + 1
+                question = item[symbol_position:]
             if 'Ответ' in item:
-                a = item.find(':') + 1
-                new_a = item[a:]
-            if new_a and new_q:
-                dic_q[new_q] = new_a
+                symbol_position = item.find(':') + 1
+                answer = item[symbol_position:]
+            if answer and question:
+                dic_q[question] = answer
 
     return dic_q
 

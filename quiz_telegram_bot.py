@@ -16,7 +16,7 @@ import redis
 
 from enum import Enum
 
-logger = logging.getLogger('quiz')
+logger = logging.getLogger('tg_quiz_bot')
 
 
 class Color(Enum):

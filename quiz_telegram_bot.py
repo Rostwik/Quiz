@@ -5,7 +5,6 @@ from functools import partial
 from random import choice
 
 import telegram
-from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, Filters, RegexHandler
 from dotenv import load_dotenv
 

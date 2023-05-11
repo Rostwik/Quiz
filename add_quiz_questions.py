@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 def add_quiz_questions():
     load_dotenv()
-    dic_q = {}
+    quiz = {}
     path = os.getenv('QUIZ_FILE_PATH')
 
     if not path:
@@ -28,9 +28,9 @@ def add_quiz_questions():
                 symbol_position = item.find(':') + 1
                 answer = item[symbol_position:]
             if answer and question:
-                dic_q[question] = answer
+                quiz[question] = answer
 
-    return dic_q
+    return quiz
 
 
 if __name__ == '__main__':

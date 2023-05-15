@@ -1,12 +1,5 @@
-import os
-
-from dotenv import load_dotenv
-
-
-def add_quiz_questions():
-    load_dotenv()
+def add_quiz_questions(path=''):
     quiz = {}
-    path = os.getenv('QUIZ_FILE_PATH')
 
     if not path:
         path = "files/quiz.txt"

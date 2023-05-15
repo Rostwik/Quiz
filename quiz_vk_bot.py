@@ -13,7 +13,7 @@ import telegram
 from dotenv import load_dotenv
 from vk_api.utils import get_random_id
 import redis
-from add_quiz_questions import add_quiz_questions
+from get_quiz_questions import add_quiz_questions
 
 from logger_handler import TelegramLogsHandler
 
@@ -65,8 +65,9 @@ def main():
     telegram_admin_chat_id = os.getenv('TELEGRAM_CHAT_ID')
     telegram_monitor_api_token = os.getenv('TELEGRAM_MONITOR_API_TOKEN')
     redis_bd_credentials = os.getenv('REDIS_BD_CREDENTIALS')
+    path = os.getenv('QUIZ_FILE_PATH')
 
-    quiz = add_quiz_questions()
+    quiz = add_quiz_questions(path)
 
     bd_connection = redis.from_url(redis_bd_credentials)
     bd_connection.ping()

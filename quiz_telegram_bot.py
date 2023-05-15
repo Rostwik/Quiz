@@ -8,7 +8,7 @@ import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, Filters, RegexHandler
 from dotenv import load_dotenv
 
-from add_quiz_questions import add_quiz_questions
+from get_quiz_questions import add_quiz_questions
 from logger_handler import TelegramLogsHandler
 
 import redis
@@ -18,13 +18,10 @@ from enum import Enum
 logger = logging.getLogger('tg_quiz_bot')
 
 
-class Color(Enum):
+class State(Enum):
     QUESTION = 1
     ANSWER = 2
     GIVE_UP = 3
-
-
-state = Enum('state', ['QUESTION', 'ANSWER', 'GIVE_UP'])
 
 
 def error_handler(bot, update):
@@ -42,28 +39,19 @@ def start(bot, update):
         reply_markup=reply_markup
     )
 
-    return state.QUESTION
+    return State.QUESTION
 
 
 def handle_new_question_request(bot, update, bd_connection, quiz):
-    user_input = update.effective_message.text
     user_id = update.message.chat_id
 
-    if user_input == 'Новый вопрос':
-        random_question = choice(list(quiz))
-        update.message.reply_text(
-            random_question,
-        )
-        bd_connection.set(user_id, random_question)
+    random_question = choice(list(quiz))
+    update.message.reply_text(
+        random_question,
+    )
+    bd_connection.set(user_id, random_question)
 
-        return state.ANSWER
-
-    else:
-        update.message.reply_text(
-            'Я не вижу ни одного выбранного Вами вопроса - нажмите, пожалуйста, «Новый вопрос»',
-        )
-
-        return state.QUESTION
+    return State.ANSWER
 
 
 def handle_solution_attempt(bot, update, bd_connection, quiz):
@@ -83,14 +71,14 @@ def handle_solution_attempt(bot, update, bd_connection, quiz):
             'Правильно! Поздравляю! Для следующего вопроса нажми «Новый вопрос».',
         )
 
-        return state.QUESTION
+        return State.QUESTION
 
     else:
         update.message.reply_text(
             'Неправильно… Попробуете ещё раз?',
         )
 
-        return state.ANSWER
+        return State.ANSWER
 
 
 def handle_give_up(bot, update, bd_connection, quiz):
@@ -110,7 +98,7 @@ def handle_give_up(bot, update, bd_connection, quiz):
         f'Новый вопрос: {random_question}',
     )
 
-    return state.ANSWER
+    return State.ANSWER
 
 
 def end(bot, update):
@@ -127,8 +115,9 @@ def main():
     telegram_monitor_api_token = os.getenv('TELEGRAM_MONITOR_API_TOKEN')
     telegram_admin_chat_id = os.getenv('TELEGRAM_CHAT_ID')
     redis_bd_credentials = os.getenv('REDIS_BD_CREDENTIALS')
+    path = os.getenv('QUIZ_FILE_PATH')
 
-    quiz = add_quiz_questions()
+    quiz = add_quiz_questions(path)
 
     bd_connection = redis.from_url(redis_bd_credentials)
     bd_connection.ping()
@@ -146,7 +135,7 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            state.QUESTION: [RegexHandler(
+            State.QUESTION: [RegexHandler(
                 'Новый вопрос',
                 partial(
                     handle_new_question_request,
@@ -156,7 +145,7 @@ def main():
             ),
             ],
 
-            state.ANSWER: [RegexHandler(
+            State.ANSWER: [RegexHandler(
                 'Сдаться',
                 partial(
                     handle_give_up,

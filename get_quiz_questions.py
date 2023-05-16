@@ -1,8 +1,5 @@
-def add_quiz_questions(path=''):
+def get_quiz_questions(path='files/quiz.txt'):
     quiz = {}
-
-    if not path:
-        path = "files/quiz.txt"
 
     with open(path, "r", encoding="KOI8-R") as file:
         file_contents = file.read()
@@ -27,4 +24,4 @@ def add_quiz_questions(path=''):
 
 
 if __name__ == '__main__':
-    add_quiz_questions()
+    get_quiz_questions()

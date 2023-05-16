@@ -8,7 +8,7 @@ import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, Filters, RegexHandler
 from dotenv import load_dotenv
 
-from get_quiz_questions import add_quiz_questions
+from get_quiz_questions import get_quiz_questions
 from logger_handler import TelegramLogsHandler
 
 import redis
@@ -117,7 +117,7 @@ def main():
     redis_bd_credentials = os.getenv('REDIS_BD_CREDENTIALS')
     path = os.getenv('QUIZ_FILE_PATH')
 
-    quiz = add_quiz_questions(path)
+    quiz = get_quiz_questions(path)
 
     bd_connection = redis.from_url(redis_bd_credentials)
     bd_connection.ping()
